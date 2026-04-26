@@ -48,7 +48,7 @@ jobs:
       with:
         name: Resultado pruebas
         path: 'target/surefire-reports/*.xml, target/failsafe-reports/*.xml'
-        reporter: java-unit
+        reporter: java-junit
     
     - name: Subir artifact JAR final
       if: success()
