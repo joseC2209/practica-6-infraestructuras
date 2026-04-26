@@ -40,4 +40,46 @@ public class MedicoControllerMockMvcIT extends AbstractIntegration {
                 .andExpect(status().isCreated());
     }
 
+    @Test
+    @DisplayName("Crear un médico correctamente")
+    void crearMedicoYRecuperarlo() throws Exception{
+        crearMedico(this.medico);
+        this.mockMvc.perform(get("/medico/" + this.medico.getId()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.nombre").value(this.medico.getNombre()));
+    }
+
+    @Test
+    @DisplayName("Borrar un médico correctamente")
+    void borrarMedico() throws Exception{
+        crearMedico(this.medico);
+        this.mockMvc.perform(delete("/medico/" + this.medico.getId()))
+        .andExpect(status().isOk());
+        this.mockMvc.perform(get("/medico/" + this.medico.getId()))
+        .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @DisplayName("Modificar un médico correctamente")
+    void modificarMedico() throws Exception{
+        crearMedico(this.medico);
+        this.medico.setNombre("Manolo");
+        this.mockMvc.perform(put("/medico")
+        .contentType("application/json")
+        .content(objectMapper.writeValueAsString(this.medico)))
+        .andExpect(status().isNoContent());
+        this.mockMvc.perform(get("/medico/" + this.medico.getId()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.nombre").value(this.medico.getNombre()));
+    }
+
+    @Test
+    @DisplayName("Obtener médico por DNI")
+    void obtenerMedicoDNI() throws Exception{
+        crearMedico(this.medico);
+        this.mockMvc.perform(get("/medico/dni/" + this.medico.getDni()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.nombre").value(this.medico.getNombre()));
+    }
+
 }

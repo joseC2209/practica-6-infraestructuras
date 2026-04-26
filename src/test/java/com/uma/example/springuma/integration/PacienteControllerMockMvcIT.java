@@ -78,8 +78,45 @@ public class PacienteControllerMockMvcIT extends AbstractIntegration {
         crearMedico(medico);
         crearPaciente(paciente);
 
-        //Obtener paciente por ID
-        
+        this.mockMvc.perform(get("/paciente/" + this.paciente.getId()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.nombre").value(this.paciente.getNombre()));        
+    }
+
+    @Test
+    @DisplayName("Asociar médico a paciente")
+    void asociarMedicoPaciente() throws Exception{
+        crearMedico(medico);
+        crearPaciente(paciente);
+        this.paciente.setMedico(this.medico);
+        this.mockMvc.perform(get("/paciente/" + this.paciente.getId()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.medico.id").value(this.medico.getId()));
+    }
+
+    @Test
+    @DisplayName("Cambiar médico a paciente")
+    void cambiarMedicoPaciente() throws Exception{
+        crearMedico(medico);
+        crearPaciente(paciente);
+        Medico medico2 = new Medico();
+        medico2.setNombre("Arnau");
+        medico2.setId(2L);
+        medico2.setDni("877");
+        medico2.setEspecialidad("Fisiología");
+        crearMedico(medico2);
+        this.paciente.setMedico(this.medico);
+        this.mockMvc.perform(get("/paciente/" + this.paciente.getId()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.medico.id").value(this.medico.getId()));
+        this.paciente.setMedico(medico2);
+        this.mockMvc.perform(put("/paciente")
+        .contentType("application/json")
+        .content(objectMapper.writeValueAsString(this.paciente)))
+        .andExpect(status().isNoContent());
+        this.mockMvc.perform(get("/paciente/" + this.paciente.getId()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.medico.id").value(medico2.getId()));
     }
 
 }

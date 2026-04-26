@@ -1,0 +1,74 @@
+name: CI/CD Hospital
+
+on:
+  push:
+    branches:
+      - main
+  pull-request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  checks: write
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu:latest
+    steps:
+    - name: Descargar el código
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21 y Cache Maven
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: Permisos a Maven
+      run: chmod +x mvnw
+
+    - name: Compilar
+      run: ./mvnw compile --batch-mode --no-transfer-progress
+
+    - name: Tests e Integración
+      run: ./mvnw verify --batch-mode --no-transfer-progress
+
+    - name: Subir artifact de resultados de Tests
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: 'target/surefire-reports/, target/failsafe-reports/'
+    
+    - name: Informe Tests
+      if: always()
+      uses: dorny/test-reporter@v1
+      with:
+        name: Resultado pruebas
+        path: 'target/surefire-reports/*.xml, target/failsafe-reports/*.xml'
+        reporter: java-unit
+    
+    - name: Subir artifact JAR final
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-jar
+        path: target/*.jar
+      
+    - name: Generar Jacoco Badge
+      id: jacoco
+      uses: cicirello/jacoco-badge-generator@v2
+      with:
+        generate-branches-badge: true
+        jacoco-csv-file: target/site/jacoco/jacoco.csv
+    
+    - name: Commit del Jacoco Badge
+      if: ${{ github.event_name == 'push' }}
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        git add .github/badges/
+        git commit -m "Autogenerar badge de cobertura" || exit 0
+        git push

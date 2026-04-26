@@ -1,3 +1,7 @@
+[![Estado de Pruebas](https://github.com/joseC2209/practica-6-infraestructuras/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/joseC2209/practica-6-infraestructuras/actions)
+
+![Cobertura Jacoco](.github/badges/jacoco.svg)
+
 # SpringUMA — Medical Records System
 
 > ⚠️ Replace `<YOUR_USER>` and `<YOUR_REPO>` with your actual GitHub account details.

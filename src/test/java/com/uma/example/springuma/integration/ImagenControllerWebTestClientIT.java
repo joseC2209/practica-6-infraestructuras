@@ -90,4 +90,14 @@ public class ImagenControllerWebTestClientIT extends AbstractIntegration {
         }
     }
 
+    @Test
+    @DisplayName("Subir imágenes de pacientes")
+    void subirImagenesPacientes() throws Exception{
+        subirImagen("healthy.png");
+        testClient.get().uri("/imagen/paciente/" + this.paciente.getId())
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody().jsonPath("$.length()").isEqualTo(1);
+    }
+
    }

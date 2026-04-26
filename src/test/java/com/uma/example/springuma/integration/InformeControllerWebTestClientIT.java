@@ -90,4 +90,17 @@ public class InformeControllerWebTestClientIT extends AbstractIntegration {
                 .expectStatus().isOk();
 
     }
+
+    @Test
+    @DisplayName("Predicción imagen paciente")
+    void prediccionImagenPaciente() throws Exception{
+        testClient.get().uri("/imagen/predict/1")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody(String.class)
+        .value(resultado -> {
+                System.out.println("Resultado: " + resultado);
+                assertTrue(resultado != null && !resultado.isEmpty());
+        });
+    }
 }
