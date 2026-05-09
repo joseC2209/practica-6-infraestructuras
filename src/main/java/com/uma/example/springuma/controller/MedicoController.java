@@ -31,7 +31,7 @@ public class MedicoController {
             medicoService.addMedico(medico);
             return ResponseEntity.status(201).build();
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("El medico ya existe");
+            return ResponseEntity.internalServerError().body("El medico ya existe (Versión 2.0)");
         }
     }
 
