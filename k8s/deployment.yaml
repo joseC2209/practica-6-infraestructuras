@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: hospital-app
-        image: joseC2209/springuma-hospital:latest
+        image: josecdn/springuma-hospital:latest
         
         imagePullPolicy: Always
         ports:
